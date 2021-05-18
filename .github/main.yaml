@@ -1,0 +1,74 @@
+name: Build,Test,Deploy appliction
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ['self-hosted']
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Downloading & Installing prerequisites
+        run: |
+          export DEBIAN_FRONTEND=noninteractive &&\
+          sudo apt-get update -y && \
+          sudo apt-get install -y zip unzip tar;
+          curl -Lk -O ${{ secrets.VSPHERE_SERVER_URL }}/wcp/plugin/linux-amd64/vsphere-plugin.zip;
+          unzip vsphere-plugin.zip;
+          sudo mv bin/* /usr/local/bin/
+          sudo rm -fr ./bin ./vsphere-plugin.zip;
+          ls -lahcts ./;
+
+
+  kubectl-authentication:
+    needs: ['prepare']
+    runs-on: ['self-hosted']
+
+    steps:
+    - name: Authenticating to Tanzu...
+      env:
+        KUBECTL_VSPHERE_PASSWORD: ${{ secrets.VSPHERE_PASSWORD }}
+      run: |
+        kubectl vsphere login \
+        --vsphere-username ${{ secrets.VSPHERE_USERNAME }} \
+        --server=${{ secrets.VSPHERE_SERVER_URL }} \
+        --insecure-skip-tls-verify  \
+        --tanzu-kubernetes-cluster-name ${{ secrets.VSPHERE_CONTEXT }};
+        kubectl config use-context ${{ secrets.VSPHERE_CONTEXT }};
+
+  build-application:
+    needs: ['prepare', 'kubectl-authentication']
+    runs-on: ['self-hosted']
+
+    steps:
+    - name: Building Application...
+      run: |
+        echo "Doing application building stuff...";
+        sleep 10;
+        ls -lahcts ./
+        echo "Done";
+
+  run-tests:
+    needs: ['prepare', 'kubectl-authentication', 'build-application']
+    runs-on: ['self-hosted']
+
+    steps:
+    - name: Running tests...
+      run: |
+        echo "Doing application testing stuff...";
+        sleep 10;
+        ls -lahcts ./
+        echo "Done";
+
+  deploy-application:
+    needs: ['prepare', 'kubectl-authentication', 'build-application', 'run-tests']
+    runs-on: ['self-hosted']
+
+    steps:
+    - name: Deploying and waiting for the application to be ready...
+      run: |
+        kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} apply -f release/kubernetes-manifests.yaml
+        kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} wait --for=condition=Ready deployment/frontend --timeout=600s
