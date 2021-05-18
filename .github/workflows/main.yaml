@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Download & Install prerequisites
+      - name: Downloading & Installing prerequisites
         run: |
           export DEBIAN_FRONTEND=noninteractive &&\
           sudo apt-get update -y && \
@@ -28,7 +28,7 @@ jobs:
     runs-on: ['self-hosted']
 
     steps:
-    - name: Authenticate to Tanzu
+    - name: Authenticating to Tanzu...
       run: |
         export KUBECTL_VSPHERE_PASSWORD='${{ secrets.VSPHERE_PASSWOR }}';
         kubectl vsphere login \
@@ -55,7 +55,7 @@ jobs:
     runs-on: ['self-hosted']
 
     steps:
-    - name: Building Application...
+    - name: Running tests...
       run: |
         echo "Doing application testing stuff...";
         sleep 10;
