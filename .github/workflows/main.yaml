@@ -70,7 +70,7 @@ jobs:
     - name: Running tests...
       run: |
         echo "Doing application testing stuff...";
-        sleep 10;
+        sleep 5;
         ls -lahcts ./
         echo "Done";
 
