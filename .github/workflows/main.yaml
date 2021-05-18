@@ -51,7 +51,7 @@ jobs:
     - name: Building Application...
       run: |
         echo "Doing application building stuff...";
-        skaffold build --images frontend --build-concurrency=1 --profile tanzu;
+        skaffold build --build-image=frontend --build-concurrency=1 --profile tanzu;
         echo "Done";
 
   run-tests:
