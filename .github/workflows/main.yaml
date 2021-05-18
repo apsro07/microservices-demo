@@ -29,8 +29,9 @@ jobs:
 
     steps:
     - name: Authenticating to Tanzu...
+      env:
+        KUBECTL_VSPHERE_PASSWORD: '${{ secrets.VSPHERE_PASSWOR }}'
       run: |
-        export KUBECTL_VSPHERE_PASSWORD='${{ secrets.VSPHERE_PASSWOR }}';
         kubectl vsphere login \
         --vsphere-username ${{ secrets.VSPHERE_USERNAME }} \
         --server=${{ secrets.VSPHERE_SERVER_URL }} \
