@@ -71,4 +71,4 @@ jobs:
     - name: Deploying and waiting for the application to be ready...
       run: |
         kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} apply -f release/kubernetes-manifests.yaml
-        kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} wait --for=condition=Ready deployment/frontend --timeout=600s
+        # kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} wait --for=condition=Ready deployment/frontend --timeout=600s
