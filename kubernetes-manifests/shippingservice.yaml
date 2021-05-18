@@ -20,6 +20,11 @@ spec:
   selector:
     matchLabels:
       app: shippingservice
+  strategy:
+    type: Recreate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
