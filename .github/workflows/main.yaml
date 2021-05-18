@@ -21,7 +21,11 @@ jobs:
           sudo mv bin/* /usr/local/bin/
           sudo rm -fr ./bin ./vsphere-plugin.zip;
           ls -lahcts ./;
-
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+          sudo install skaffold /usr/local/bin/
+          rm -fr ./skaffold;
+          skaffold config set default-repo docker.io/apsro07
+          skaffold config set --global collect-metrics false       
 
   kubectl-authentication:
     needs: ['prepare']
@@ -47,8 +51,7 @@ jobs:
     - name: Building Application...
       run: |
         echo "Doing application building stuff...";
-        sleep 10;
-        ls -lahcts ./
+        skaffold build --build-concurrency=2 --profile tanzu;
         echo "Done";
 
   run-tests:
@@ -70,5 +73,4 @@ jobs:
     steps:
     - name: Deploying and waiting for the application to be ready...
       run: |
-        kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} apply -f release/kubernetes-manifests.yaml
-        # kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} wait --for=condition=Ready deployment/frontend --timeout=600s
+        skaffold render --profile tanzu | kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} apply -f -        
