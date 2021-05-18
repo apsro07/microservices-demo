@@ -20,6 +20,11 @@ spec:
   selector:
     matchLabels:
       app: frontend
+  strategy:
+    type: Recreate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -76,10 +81,7 @@ spec:
             value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
-          resources:
-            limits:
-              cpu: 200m
-              memory: 128Mi
+          resources: {}
 ---
 apiVersion: v1
 kind: Service

@@ -20,6 +20,11 @@ spec:
   selector:
     matchLabels:
       app: currencyservice
+  strategy:
+    type: Recreate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -48,10 +53,7 @@ spec:
         livenessProbe:
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:7000"]
-        resources:
-          limits:
-            cpu: 200m
-            memory: 128Mi
+        resources: {}
 ---
 apiVersion: v1
 kind: Service
