@@ -73,4 +73,4 @@ jobs:
     steps:
     - name: Deploying and waiting for the application to be ready...
       run: |
-        skaffold render --profile tanzu | kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} apply -f -        
+         skaffold deploy --profile=tanzu
