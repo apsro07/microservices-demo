@@ -6,17 +6,68 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  prepare:
     runs-on: ['self-hosted']
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Download prerequisites
+      - name: Download & Install prerequisites
         run: |
           export DEBIAN_FRONTEND=noninteractive &&\
           sudo apt-get update -y && \
           sudo apt-get install -y zip unzip tar;
           curl -Lk -O ${{ secrets.VSPHERE_SERVER_URL }}/wcp/plugin/linux-amd64/vsphere-plugin.zip;
-          unzip ./vsphere-plugin.zip;
+          unzip vsphere-plugin.zip;
+          sudo mv bin/* /usr/local/bin/
+          sudo rm -fr ./bin ./vsphere-plugin.zip;
           ls -lahcts ./;
+
+
+  kubectl-authentication:
+    needs: ['prepare']
+    runs-on: ['self-hosted']
+
+    steps:
+    - name: Authenticate to Tanzu
+      run: |
+        export KUBECTL_VSPHERE_PASSWORD='${{ secrets.VSPHERE_PASSWOR }}';
+        kubectl vsphere login \
+        --vsphere-username ${{ secrets.VSPHERE_USERNAME }} \
+        --server=${{ secrets.VSPHERE_SERVER_URL }} \
+        --insecure-skip-tls-verify  \
+        --tanzu-kubernetes-cluster-name ${{ secrets.VSPHERE_CONTEXT }};
+        kubectl config use-context ${{ secrets.VSPHERE_CONTEXT }};
+
+  build-application:
+    needs: ['prepare', 'kubectl-authentication']
+    runs-on: ['self-hosted']
+
+    steps:
+    - name: Building Application...
+      run: |
+        echo "Doing application building stuff...";
+        sleep 10;
+        ls -lahcts ./
+        echo "Done";
+
+  run-tests:
+    needs: ['prepare', 'kubectl-authentication', 'build-application']
+    runs-on: ['self-hosted']
+
+    steps:
+    - name: Building Application...
+      run: |
+        echo "Doing application testing stuff...";
+        sleep 10;
+        ls -lahcts ./
+        echo "Done";
+
+  deploy-application:
+    needs: ['prepare', 'kubectl-authentication', 'build-application', 'run-tests']
+    runs-on: ['self-hosted']
+
+    steps:
+    - name: Deploying and verifying the application...
+      run: |
+        kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} apply -f release/kubernetes-manifests.yaml
+        kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} get all -o wide
