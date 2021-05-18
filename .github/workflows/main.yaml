@@ -1,0 +1,19 @@
+name: Test, Build and deploy application
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ['self-hosted']
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download prerequisites
+        run: |
+          curl -Lk -O ${secrets.VSPHERE_SERVER_URL}/wcp/plugin/linux-amd64/vsphere-plugin.zip;
+          unzip ./vsphere-plugin.zip;
+          ls -lahcts ./;
