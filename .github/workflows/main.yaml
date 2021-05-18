@@ -51,7 +51,7 @@ jobs:
     - name: Building Application...
       run: |
         echo "Doing application building stuff...";
-        skaffold build --build-concurrency=2 --profile tanzu;
+        skaffold build --images frontend --build-concurrency=1 --profile tanzu;
         echo "Done";
 
   run-tests:
@@ -73,4 +73,4 @@ jobs:
     steps:
     - name: Deploying and waiting for the application to be ready...
       run: |
-         skaffold deploy --profile=tanzu
+         skaffold render  --profile=tanzu | kubectl -n online-boutique apply -f -

@@ -17,37 +17,49 @@ build:
   artifacts:
   - image: emailservice
     context: src/emailservice
-    kaniko: {}
+    kaniko:
+      cache:
+        repo: productcatalogservice
   - image: productcatalogservice
     context: src/productcatalogservice
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: recommendationservice
     context: src/recommendationservice
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: shippingservice
     context: src/shippingservice
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: checkoutservice
     context: src/checkoutservice
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: paymentservice
     context: src/paymentservice
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: currencyservice
     context: src/currencyservice
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: cartservice
     context: src/cartservice/src
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: frontend
     context: src/frontend
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: loadgenerator
     context: src/loadgenerator
-    kaniko: {}
+    kaniko:
+      cache: {}
   - image: adservice
     context: src/adservice
-    kaniko: {}
+    kaniko:
+      cache: {}
   tagPolicy:
     customTemplate:
       template: 'v0.1.4-115-ge9e39a0'
