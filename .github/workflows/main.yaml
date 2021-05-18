@@ -1,4 +1,4 @@
-name: Test, Build and deploy application
+name: Build,Test,Deploy appliction
 
 on:
   push:
@@ -30,8 +30,7 @@ jobs:
     steps:
     - name: Authenticating to Tanzu...
       run: |
-        KUBECTL_VSPHERE_PASSWORD='${{ secrets.VSPHERE_PASSWOR }}' \
-        kubectl vsphere login \
+        KUBECTL_VSPHERE_PASSWORD='${{ secrets.VSPHERE_PASSWOR }}' kubectl vsphere login \
         --vsphere-username ${{ secrets.VSPHERE_USERNAME }} \
         --server=${{ secrets.VSPHERE_SERVER_URL }} \
         --insecure-skip-tls-verify  \
