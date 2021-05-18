@@ -68,7 +68,7 @@ jobs:
     runs-on: ['self-hosted']
 
     steps:
-    - name: Deploying and verifying the application...
+    - name: Deploying and waiting for the application to be ready...
       run: |
         kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} apply -f release/kubernetes-manifests.yaml
-        kubectl -n ${{ secrets.APPLICATION_NAMESPACE }} get all -o wide
+        kubectl wait --for=condition=Ready deployment/frontend --timeout=600s
