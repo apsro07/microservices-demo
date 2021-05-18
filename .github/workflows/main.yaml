@@ -25,7 +25,7 @@ jobs:
           sudo install skaffold /usr/local/bin/
           rm -fr ./skaffold;
           skaffold config set default-repo docker.io/apsro07
-          skaffold config set --global collect-metrics false       
+          skaffold config set --global collect-metrics false
 
   kubectl-authentication:
     needs: ['prepare']
@@ -43,8 +43,16 @@ jobs:
         --tanzu-kubernetes-cluster-name ${{ secrets.VSPHERE_CONTEXT }};
         kubectl config use-context ${{ secrets.VSPHERE_CONTEXT }};
 
-  build-application:
+  docker-registry-authentication:
     needs: ['prepare', 'kubectl-authentication']
+    runs-on: [self-hosted]
+
+    steps:
+    - name: Preparing the OCI build environment...
+      run: ${{ secrets.DOCKER_SETUP_SCRIPT }}
+
+  build-application:
+    needs: ['prepare', 'kubectl-authentication',  'docker-registry-authentication']
     runs-on: ['self-hosted']
 
     steps:
@@ -55,7 +63,7 @@ jobs:
         echo "Done";
 
   run-tests:
-    needs: ['prepare', 'kubectl-authentication', 'build-application']
+    needs: ['prepare', 'kubectl-authentication', 'docker-registry-authentication', 'build-application']
     runs-on: ['self-hosted']
 
     steps:
@@ -67,7 +75,7 @@ jobs:
         echo "Done";
 
   deploy-application:
-    needs: ['prepare', 'kubectl-authentication', 'build-application', 'run-tests']
+    needs: ['prepare', 'kubectl-authentication', 'docker-registry-authentication', 'build-application', 'run-tests']
     runs-on: ['self-hosted']
 
     steps:
