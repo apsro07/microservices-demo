@@ -66,12 +66,14 @@ build:
   cluster:
     namespace: online-boutique
 deploy:
+  # TODO: Find a proper solution for this
+  # statusCheck: false
   kubectl:
     defaultNamespace: online-boutique
     manifests:
     - ./kubernetes-manifests/**.yaml
 profiles:
-- name: tanzu
+- name: ci
   build:
     cluster:
       namespace: online-boutique
