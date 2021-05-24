@@ -73,7 +73,7 @@ deploy:
     manifests:
     - ./kubernetes-manifests/**.yaml
 profiles:
-- name: ci
+- name: tanzu
   build:
     cluster:
       namespace: online-boutique
